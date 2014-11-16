@@ -9,6 +9,10 @@ library(ggplot2)
 code <- readRDS("Source_Classification_Code.rds")
 summary <- readRDS("summarySCC_PM25.rds")
 
+
+
+
+
 # create plot 1
 # 1.1 - sum all the emissions from summary and group it by year through dplyr
 totals <- summary %>%
@@ -19,7 +23,12 @@ totals <- summary %>%
 totals[,2] <- totals[,2]/1000000
 
 # 1.3 - plot the graph
+png("plot1.png",width=480,height=480)
 barplot(totals[,2],names.arg=totals[,1],space=F,col=rainbow(4),main="Emissions of PM2.4",xlab="Year",ylab="Emissions of PM2.4(millions)",las=1)
+dev.off()
+
+
+
 
 # create plot 2
 # 2.1 - create a data frame "balt" from its corresponding code, fips, from summary in order to have data only for Baltimore
@@ -31,7 +40,12 @@ totals_balt <- balt %>%
         summarise(sum(Emissions))
 
 # 2.3 - plot the graph
+png("plot2.png",width=480,height=480)
 barplot(totals_balt[,2],names.arg=totals_balt[,1],space=F,col=rainbow(4),main="Emissions of PM2.4",xlab="Year",ylab="Emissions of PM2.4",las=1)
+dev.off()
+
+
+
 
 # create plot 3
 # 3.1 - leveraging the "balt" dataframe created on 2.1, create another, totals_type, which
@@ -47,7 +61,12 @@ colnames(totals_type)[3] <- "Emissions"
 totals_type[3] <- totals_type[3]/1000
 
 # 3.4 - plot the graph
+png("plot3.png",width=480,height=480)
 qplot(year,Emissions,data=totals_type,color=type,facets=type~.,ylab="Emissions of PM2.4 (thousands)") + geom_line()
+dev.off()
+
+
+
 
 # plot 4
 coal.code <- grep("Coal",code$EI.Sector)
@@ -64,7 +83,12 @@ totals.sccs <- sum.sccs %>%
 
 colnames(totals.sccs)[2] <- "Emissions"
 
+png("plot4.png",width=480,height=480)
 qplot(year,Emissions,data=totals.sccs,ylab="Emissions of PM2.4") + geom_line()
+dev.off()
+
+
+
 
 # plot 5
 onroad <- subset(summary,summary$type=="ON-ROAD")
@@ -75,7 +99,12 @@ totals.onroad <- onroad %>%
 
 colnames(totals.onroad)[2] <- "Emissions"
 
+png("plot5.png",width=480,height=480)
 qplot(year,Emissions,data=totals.onroad,ylab="Emissions of PM2.4") + geom_line()
+dev.off()
+
+
+
 
 # plot 6
 onroad.balt.la <- subset(summary,summary$type=="ON-ROAD" & (summary$fips=="24510" | summary$fips=="06037"))
@@ -96,6 +125,6 @@ for(i in 1:nrow(totals.onroad.balt.la)){
 
 colnames(totals.onroad.balt.la)[3] <- "Emissions"
 
+png("plot6.png",width=480,height=480)
 qplot(year,Emissions,data=totals.onroad.balt.la,color=fips,facets=fips~.,ylab="Emissions of PM2.4 (thousands)") + geom_line()
-
-
+dev.off()
