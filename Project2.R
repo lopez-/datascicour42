@@ -64,6 +64,38 @@ totals.sccs <- sum.sccs %>%
 
 colnames(totals.sccs)[2] <- "Emissions"
 
-qplot(year,Emissions,data=totals.sccs,ylab="Emissions of PM2.4",colour="red",legend=F) + geom_line()
+qplot(year,Emissions,data=totals.sccs,ylab="Emissions of PM2.4") + geom_line()
 
 # plot 5
+onroad <- subset(summary,summary$type=="ON-ROAD")
+
+totals.onroad <- onroad %>%
+        group_by(year) %>%
+        summarise(sum(Emissions))
+
+colnames(totals.onroad)[2] <- "Emissions"
+
+qplot(year,Emissions,data=totals.onroad,ylab="Emissions of PM2.4") + geom_line()
+
+# plot 6
+onroad.balt.la <- subset(summary,summary$type=="ON-ROAD" & (summary$fips=="24510" | summary$fips=="06037"))
+
+onroad.la <- subset(summary,summary$type=="ON-ROAD" & summary$fips=="06037")
+
+totals.onroad.balt.la <- onroad.balt.la %>%
+        group_by(year,fips) %>%
+        summarise(sum(Emissions))
+
+for(i in 1:nrow(totals.onroad.balt.la)){
+        if(totals.onroad.balt.la[i,2]=="06037"){
+                totals.onroad.balt.la[i,2] <- "Los Angeles"
+        } else {
+                totals.onroad.balt.la[i,2] <- "Baltimore"
+        }
+}
+
+colnames(totals.onroad.balt.la)[3] <- "Emissions"
+
+qplot(year,Emissions,data=totals.onroad.balt.la,color=fips,facets=fips~.,ylab="Emissions of PM2.4 (thousands)") + geom_line()
+
+
