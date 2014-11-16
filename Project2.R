@@ -50,19 +50,20 @@ totals_type[3] <- totals_type[3]/1000
 qplot(year,Emissions,data=totals_type,color=type,facets=type~.,ylab="Emissions of PM2.4 (thousands)") + geom_line()
 
 # plot 4
-coal.code <- grep("Coal$",code$EI.Sector)
-coal <- data.frame()
-for(i in coal.code){
-        coal <- rbind(coal, code[i,])
-}
+coal.code <- grep("Coal",code$EI.Sector)
 
-scc <- data.frame()
-temp <- data.frame()
-for(i in nrow(coal)){
-        temp <- subset(summary,summary[,2]==coal[i,1])
-        for(j in nrow(temp)){
-                scc <- rbind(scc,temp[j,])
-        }               
-}
+sccs <- code[coal.code,][,1]
 
+sccs <- data.frame("SCC"=sccs)
 
+sum.sccs <- merge(summary,sccs,by="SCC")
+
+totals.sccs <- sum.sccs %>%
+        group_by(year) %>%
+        summarise(sum(Emissions))
+
+colnames(totals.sccs)[2] <- "Emissions"
+
+qplot(year,Emissions,data=totals.sccs,ylab="Emissions of PM2.4",colour="red",legend=F) + geom_line()
+
+# plot 5
